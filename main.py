@@ -59,13 +59,13 @@ def clean_dict(func):
 давайте внизу страницы просто сделаем переключатель, которые будет определять роль соответсвующую
 
 
-я в свою очередь пропишу сейчас функции, которые будут определать разные роли
+я в свою очередь пропишу сейчас функции, которые будут определать разные роли 
 
 '''
 
 
 
-def get_students_by_format(format: str) -> int: # функция 1make_connect()
+def get_students_by_format(format: str) -> int: #функция которая получает кол-во студентов в зависимости от формы обучения
     conn = make_connect()
     cursor = conn.cursor()
     cursor.execute('SELECT COUNT(student_id) FROM students WHERE format = %s',(format))
@@ -105,7 +105,7 @@ def get_student_id_by_name(f_name: str, s_name: str) -> int: # получени�
         return student_id[0]
 
 
-def get_spec_id_by_subject(subj: str) -> int:
+def get_spec_id_by_subject(subj: str) -> int: # функцияя для получения id спец курса по предмету
     conn = make_connect()
     cursor = conn.cursor()
     cursor.execute('SELECT spec_id FROM edu_plan WHERE subject = %s', (subj))
@@ -118,7 +118,7 @@ def get_spec_id_by_subject(subj: str) -> int:
 
 # тут я создам комплект функций для обновления данных об успеваемости и прочем
 
-@clean_dict
+@clean_dict # декоратор находится выше
 def get_all_data(f_name:str, s_name: str,  subject: str, id: int) -> dict: # функция будет возвращать все данные по параметрам, чтобы потом можно было реализовать функцию для изменения данных
     conn = make_connect()
     cursor = conn.cursor()
@@ -148,7 +148,7 @@ def get_all_data(f_name:str, s_name: str,  subject: str, id: int) -> dict: # ф�
 
 
 
-def add_data(data: dict):
+def add_data(data: dict): # добавление данных, доступно только преподам
     conn = make_connect()
     cursor = conn.cursor()
     
@@ -173,7 +173,7 @@ def add_data(data: dict):
 
 
 
-def add_student(data: dict): 
+def add_student(data: dict): # добавление студента
     conn = make_connect()
     cursor = conn.cursor()
     cursor.execute('''SELECT student_id FROM students WHERE f_name = %s AND s_name = %s''', 
@@ -193,7 +193,7 @@ def add_student(data: dict):
     
 #data = {'f_name': 'Олег', 's_name': 'Лобанов', 'p_name': None, 'date_entry': '01-09-2023', 'format': 'Вечерняя', 'group_num': 143, 'spec_name': 'Биг дата', 'subject': 'Мат. стат', 'semester': 2, 'plan_hours': 128, 'exam': 'Экзамен', 'year': '2023', 'grade': 3}
 
-def add_course(data: dict):
+def add_course(data: dict): #Добавление курса
     conn = make_connect()
     cursor = conn.cursor()
     
@@ -216,7 +216,7 @@ def add_course(data: dict):
 
 
 
-def alter_journal(f_data: dict, s_data: dict):
+def alter_journal(f_data: dict, s_data: dict):#функция для изменения данных в журнале, сначала получаем все данные из функции выше, меняем их, после чего заменяем
     student_id = get_student_id_by_name(f_data['f_name'], f_data['s_name'])
     course_id = get_spec_id_by_subject(f_data['subject'])
     conn = make_connect()
@@ -240,6 +240,6 @@ def alter_journal(f_data: dict, s_data: dict):
 
     
 #print(get_students_by_format('Дневная'))
-print(get_all_data('Антон','Антонов', 'ui/ux-дизайн', 2))
+print(get_all_data('Антон','Антонов', 'ui/ux-дизайн', 2))# протестите функцию с id от 1-3
 #print(get_hours_exam_by_spec('Мат. стат'))
 
