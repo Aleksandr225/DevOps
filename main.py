@@ -28,6 +28,42 @@ def make_connect():
         print('ошибка')
 
 
+def clean_dict(func):
+    def wrapper(*args, **kwargs):
+        initial_dict = func(*args, **kwargs)
+        id = initial_dict.pop('id', None)
+        match id: 
+            case 1:
+                items_to_pop = ['f_name', 's_name', 'p_name', 'date_entry', 'format', 'group_num', 'year', 'grade']
+                for item in items_to_pop:
+                    initial_dict.pop(item, None)
+            case 2:
+                items_to_pop = ['date_entry', 'year']
+                for item in items_to_pop:
+                    initial_dict.pop(item, None)
+            case 3:
+                return initial_dict
+        return initial_dict
+    return wrapper
+    
+
+
+'''
+Предлагаю сделать три роли, гость, студент, препод 
+
+гость сможет просматривать только информацию о курсах
+студент - о курсах и своих оценках, ну и свою инфу
+препод - может просматривать все, и менять тоже собственно
+
+механизм авторизации и регистрации делать не будем думаю, ибо запарно и нет особо смысла, 
+давайте внизу страницы просто сделаем переключатель, которые будет определять роль соответсвующую
+
+
+я в свою очередь пропишу сейчас функции, которые будут определать разные роли
+
+'''
+
+
 
 def get_students_by_format(format: str) -> int: # функция 1make_connect()
     conn = make_connect()
@@ -82,8 +118,8 @@ def get_spec_id_by_subject(subj: str) -> int:
 
 # тут я создам комплект функций для обновления данных об успеваемости и прочем
 
-
-def get_all_data(s_name: str, f_name:str,  subject: str) -> dict: # функция будет возвращать все данные по параметрам, чтобы потом можно было реализовать функцию для изменения данных
+@clean_dict
+def get_all_data(f_name:str, s_name: str,  subject: str, id: int) -> dict: # функция будет возвращать все данные по параметрам, чтобы потом можно было реализовать функцию для изменения данных
     conn = make_connect()
     cursor = conn.cursor()
     
@@ -106,6 +142,7 @@ def get_all_data(s_name: str, f_name:str,  subject: str) -> dict: # функци
         return ('Такая запись отсутствует')
     else: 
         data = dict(zip(params, list(rows[0])))
+        data['id'] =id
 
         return data
 
@@ -202,7 +239,7 @@ def alter_journal(f_data: dict, s_data: dict):
     conn.close()
 
     
-print(get_students_by_format('Дневная'))
-print(get_all_data('Тестов', 'Кибербезопасность', 'DevOps'))
-print(get_hours_exam_by_spec('Мат. стат'))
+#print(get_students_by_format('Дневная'))
+print(get_all_data('Антон','Антонов', 'ui/ux-дизайн', 2))
+#print(get_hours_exam_by_spec('Мат. стат'))
 
