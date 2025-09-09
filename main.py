@@ -248,5 +248,5 @@ add_student(data)
 add_data(data)
 print(get_students_by_format('Дневная'))
 print(get_all_data('Антон','Антонов', 'ui/ux-дизайн', 3))# протестите функцию с id от 1-3
-print(get_hours_exam_by_spec('Мат. стат'))
+print(get_hours_exam_by_spec('ui/ux-дизайн'))
 
