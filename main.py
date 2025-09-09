@@ -11,17 +11,17 @@
 4) предоставить возможность добавления и изменения информации о
 журнале успеваемости'''
    
-import pymysql
+import psycopg2
 from config import host, port, user, password, database
    
 def make_connect():
     try:
-        conn = pymysql.connect(
-            host=host, 
+        conn = psycopg2.connect(
+            host=host,
             port=port,
+            database=database,
             user=user,
-            password=password,
-            database=database
+            password=password
         )
         return conn
     except:
@@ -68,7 +68,7 @@ def clean_dict(func):
 def get_students_by_format(format: str) -> int: #функция которая получает кол-во студентов в зависимости от формы обучения
     conn = make_connect()
     cursor = conn.cursor()
-    cursor.execute('SELECT COUNT(student_id) FROM students WHERE format = %s',(format))
+    cursor.execute('SELECT COUNT(student_id) FROM students WHERE format = %s',(format,))
     students = cursor.fetchone()
     if students is not None:
         conn.close()
@@ -79,7 +79,7 @@ def get_students_by_format(format: str) -> int: #функция которая �
 def get_hours_exam_by_spec(subj: str) -> dict: # функция 2 возвращает словарь формата {'hours': 56, 'exam': 'Зачет'}
     conn = make_connect()
     cursor = conn.cursor()
-    cursor.execute('SELECT plan_hours, exam FROM edu_plan WHERE subject = %s',(subj))
+    cursor.execute('SELECT plan_hours, exam FROM edu_plan WHERE subject = %s',(subj,))
     rows = cursor.fetchone()
     if rows is not None:
         param = {
@@ -96,7 +96,7 @@ def get_hours_exam_by_spec(subj: str) -> dict: # функция 2 возвращ
 def get_student_id_by_name(f_name: str, s_name: str) -> int: # получения пстудента по фамилии
     conn = make_connect()
     cursor = conn.cursor()
-    cursor.execute('SELECT student_id FROM students WHERE f_name = %s and s_name = %s', (f_name, s_name))
+    cursor.execute('SELECT student_id FROM students WHERE f_name = %s and s_name = %s', (f_name, s_name,))
     student_id = cursor.fetchone()
     conn.close()
     if student_id is None:
@@ -108,7 +108,7 @@ def get_student_id_by_name(f_name: str, s_name: str) -> int: # получени�
 def get_spec_id_by_subject(subj: str) -> int: # функцияя для получения id спец курса по предмету
     conn = make_connect()
     cursor = conn.cursor()
-    cursor.execute('SELECT spec_id FROM edu_plan WHERE subject = %s', (subj))
+    cursor.execute('SELECT spec_id FROM edu_plan WHERE subject = %s', (subj,))
     course_id = cursor.fetchone()
     conn.close()
     if course_id is None:
@@ -135,7 +135,7 @@ def get_all_data(f_name:str, s_name: str,  subject: str, id: int) -> dict: # ф�
                     FROM journal j
                         INNER JOIN students USING (student_id) 
                         INNER JOIN edu_plan USING (spec_id) 
-                   WHERE j.student_id = %s AND j.spec_id = %s AND edu_plan.subject = %s''', (student_id, course_id, subject))
+                   WHERE j.student_id = %s AND j.spec_id = %s AND edu_plan.subject = %s''', (student_id, course_id, subject,))
     
     rows = cursor.fetchall()
     if rows is None:
@@ -155,6 +155,7 @@ def add_data(data: dict): # добавление данных, доступно 
 
 
     student_id = get_student_id_by_name(data['f_name'], data['s_name'])
+
     course_id = get_spec_id_by_subject(data['subject'])
 
     
@@ -163,7 +164,7 @@ def add_data(data: dict): # добавление данных, доступно 
     rows = cursor.fetchone()
     if rows is None:
         cursor.execute('INSERT INTO journal (semester, year, student_id, spec_id, grade) VALUES (%s,%s,%s,%s,%s)',
-                   (data['semester'], data['year'], student_id, course_id, data['grade']))
+                   (data['semester'], data['year'], student_id, course_id, data['grade'],))
         conn.commit()
         conn.close()
         return 'Запись добавлена'
@@ -183,7 +184,7 @@ def add_student(data: dict): # добавление студента
 
     if rows is None:
         cursor.execute('INSERT INTO students (f_name, s_name, p_name, date_entry, format, group_num) VALUES (%s,%s,%s,%s,%s,%s)', 
-                   (data['f_name'], data['s_name'], data['p_name'], data['date_entry'], data['format'], data['group_num']))
+                   (data['f_name'], data['s_name'], data['p_name'], data['date_entry'], data['format'], data['group_num'],))
         conn.commit()
         conn.close()
         return 'Запись сохранена'
@@ -199,13 +200,13 @@ def add_course(data: dict): #Добавление курса
     
 
     cursor.execute('''SELECT spec_id FROM edu_plan  WHERE spec_name = %s and subject = %s and semester = %s''',
-                   (data['spec_name'], data['subject'], data['semester']))
+                   (data['spec_name'], data['subject'], data['semester'],))
     
     rows = cursor.fetchone()
     
     if rows is None:
         cursor.execute('INSERT INTO edu_plan (spec_name, subject, semester, plan_hours, exam) VALUES (%s,%s,%s,%s,%s)', (
-            data['spec_name'], data['subject'], data['semester'], data['plan_hours'], data['exam']))
+            data['spec_name'], data['subject'], data['semester'], data['plan_hours'], data['exam'],))
     
         conn.commit()
         conn.close()
@@ -226,20 +227,26 @@ def alter_journal(f_data: dict, s_data: dict):#функция для измен�
                    s_name = %s, p_name = %s, date_entry = %s, 
                    format = %s, group_num = %s where student_id = %s''',
                    (s_data['f_name'], s_data['s_name'], s_data['p_name'],
-                    s_data['date_entry'], s_data['format'], s_data['group_num'], student_id))
+                    s_data['date_entry'], s_data['format'], s_data['group_num'], student_id,))
     
     cursor.execute('''UPDATE edu_plan SET spec_name = %s, subject = %s, semester = %s, plan_hours = %s, exam = %s
                    WHERE spec_id = %s''', (s_data['spec_name'], s_data['subject'], s_data['semester'], 
-                                          s_data['plan_hours'], s_data[' exam'], course_id))
+                                          s_data['plan_hours'], s_data[' exam'], course_id,))
 
     cursor.execute('''UPDATE journal SET semester = %s, year = %s, grade = %s WHERE student_id = %s AND spec_id = %s''',
-                   (s_data['semester'], s_data['year'], s_data['grade'], student_id, course_id))
+                   (s_data['semester'], s_data['year'], s_data['grade'], student_id, course_id,))
 
     conn.commit()
     conn.close()
 
     
-#print(get_students_by_format('Дневная'))
-print(get_all_data('Антон','Антонов', 'ui/ux-дизайн', 2))# протестите функцию с id от 1-3
-#print(get_hours_exam_by_spec('Мат. стат'))
+
+
+data = {'f_name': 'Андрей', 's_name': 'Зайцев', 'p_name': 'Артемович', 'date_entry': '05-01-2025', 'format': 'Заочная', 'group_num': 125, 'spec_name': 'Дизайн', 'subject': 'ui/ux-дизайн', 'semester': '1', 'plan_hours': 35, 'exam': 'Зачет', 'year': '2025', 'grade': 5}
+add_course(data)
+add_student(data)
+add_data(data)
+print(get_students_by_format('Дневная'))
+print(get_all_data('Антон','Антонов', 'ui/ux-дизайн', 3))# протестите функцию с id от 1-3
+print(get_hours_exam_by_spec('Мат. стат'))
 
