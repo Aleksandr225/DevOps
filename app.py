@@ -6,12 +6,14 @@ app.secret_key = '225'
 
 # Формы обучения и предметы
 forms_study = ["Дневная", "Заочная", "Вечерняя"]
-subjects = get_subjects()
+
 exams = ['Зачет', 'Экзамен']
-specs = get_specs()
+
 
 @app.route('/')
 def index():
+    subjects = get_subjects()
+    specs = get_specs()
     return render_template('index.html', forms_study=forms_study, subjects=subjects, exams=exams, specs=specs)
 
 @app.route('/get_student_count', methods=['POST'])
