@@ -142,11 +142,19 @@ def get_all_data(f_name:str, s_name: str,  subject: str, id: int) -> dict: # ф�
         return ('Такая запись отсутствует')
     else: 
         data = dict(zip(params, list(rows[0])))
-        data['id'] =id
+        data['id'] = id
 
         return data
 
-
+def get_subjects():
+    conn = make_connect()
+    cursor = conn.cursor()
+    cursor.execute('''SELECT DISTINCT subject FROM edu_plan''')
+    formats = []
+    rows = cursor.fetchall()
+    for row in rows:
+        formats.append(row[0])
+    return formats
 
 def add_data(data: dict): # добавление данных, доступно только преподам
     conn = make_connect()
@@ -159,7 +167,7 @@ def add_data(data: dict): # добавление данных, доступно 
     course_id = get_spec_id_by_subject(data['subject'])
 
     
-    cursor.execute('''SELECT j_id FROM journal WHERE student_id = %s AND spec_id = %s and year = %s''', (student_id, course_id, data['year'],))
+    cursor.execute('''SELECT j_id FROM journal WHERE student_id = %s AND spec_id = %s''', (student_id, course_id,))
 
     rows = cursor.fetchone()
     if rows is None:
@@ -183,8 +191,8 @@ def add_student(data: dict): # добавление студента
 
 
     if rows is None:
-        cursor.execute('INSERT INTO students (f_name, s_name, p_name, date_entry, format, group_num) VALUES (%s,%s,%s,%s,%s,%s)', 
-                   (data['f_name'], data['s_name'], data['p_name'], data['date_entry'], data['format'], data['group_num'],))
+        cursor.execute('INSERT INTO students (f_name, s_name,  date_entry, format, group_num) VALUES (%s,%s,%s,%s,%s)', 
+                   (data['f_name'], data['s_name'],  data['date_entry'], data['format'], data['group_num'],))
         conn.commit()
         conn.close()
         return 'Запись сохранена'
@@ -199,8 +207,8 @@ def add_course(data: dict): #Добавление курса
     cursor = conn.cursor()
     
 
-    cursor.execute('''SELECT spec_id FROM edu_plan  WHERE spec_name = %s and subject = %s and semester = %s''',
-                   (data['spec_name'], data['subject'], data['semester'],))
+    cursor.execute('''SELECT spec_id FROM edu_plan  WHERE spec_name = %s and subject = %s''',
+                   (data['spec_name'], data['subject'], ))
     
     rows = cursor.fetchone()
     
@@ -239,14 +247,20 @@ def alter_journal(f_data: dict, s_data: dict):#функция для измен�
     conn.commit()
     conn.close()
 
-    
+def get_specs():
+    conn = make_connect()
+    cursor = conn.cursor()
+    cursor.execute('''SELECT DISTINCT spec_name FROM edu_plan''')
+    formats = []
+    rows = cursor.fetchall()
+    for row in rows:
+        formats.append(row[0])
+    return formats
 
 
-data = {'f_name': 'Андрей', 's_name': 'Зайцев', 'p_name': 'Артемович', 'date_entry': '05-01-2025', 'format': 'Заочная', 'group_num': 125, 'spec_name': 'Дизайн', 'subject': 'ui/ux-дизайн', 'semester': '1', 'plan_hours': 35, 'exam': 'Зачет', 'year': '2025', 'grade': 5}
-add_course(data)
-add_student(data)
-add_data(data)
-print(get_students_by_format('Дневная'))
-print(get_all_data('Антон','Антонов', 'ui/ux-дизайн', 3))# протестите функцию с id от 1-3
-print(get_hours_exam_by_spec('ui/ux-дизайн'))
+if __name__ == '__main__':
+    data = {'f_name': 'Андрей', 's_name': 'Зайцев', 'p_name': 'Артемович', 'date_entry': '05-01-2025', 'format': 'Заочная', 'group_num': 125, 'spec_name': 'Дизайн', 'subject': 'ui/ux-дизайн', 'semester': '1', 'plan_hours': 35, 'exam': 'Зачет', 'year': '2025', 'grade': 5}
+    #add_course(data)
+    print(get_all_data('Антон','Антонов', 'ui/ux-дизайн', 3))# протестите функцию с id от 1-3
+    print(get_hours_exam_by_spec('ui/ux-дизайн'))
 
