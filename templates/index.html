@@ -187,6 +187,8 @@
 
         <div id="student_info" style="margin-top:20px;"></div>
 
+
+
         <div id="edit_section" style="display:none; margin-top: 20px; border: 1px solid #ccc; padding: 10px;">
             <h4>Редактировать данные студента</h4>
             <label>Форма обучения:
@@ -199,14 +201,17 @@
             <label>Часы:
                 <input type="number" id="edit_hours" min="0" />
             </label><br/>
-            <label>Форма экзамена:
-                <input type="text" id="edit_exam_form" />
+            <label> Оценка:
+                <input type="number" id="edit_grade" min ='0' max = '5' />
             </label><br/>
             <button id="btn_update_student">Сохранить изменения</button>
             <div id="update_result" class="result"></div>
         </div>
     </div>
     
+
+
+
    <div id="add_student_block" class="student-section">
     <h3>Добавить нового студента и предмет</h3>
     <div class="row">
@@ -601,6 +606,52 @@ document.getElementById('btn_search_student').addEventListener('click', () => {
     })
     .catch(error => {
         document.getElementById('add_subject_result').innerHTML = `<p style="color: red;">Ошибка сети: ${error.message}</p>`;
+    });
+});
+
+    document.getElementById('btn_update_student').addEventListener('click', () => {
+    const subject = document.getElementById('student_subject').value.trim();
+    const f_name = document.getElementById('first_name').value.trim();
+    const s_name = document.getElementById('last_name').value.trim();
+    const grade = document.getElementById('edit_grade').value;
+    const format = document.getElementById('edit_form_study').value;  // Форма обучения
+    const plan_hours_str = document.getElementById('edit_hours').value;  // Строковое значение
+
+    // Валидация: проверка на заполненность обязательных полей
+    if (!f_name || !s_name || !subject || !grade || !format || !plan_hours_str) {
+        alert("Пожалуйста, заполните все поля");
+        return;
+    }
+
+    const plan_hours = parseInt(plan_hours_str);  // Преобразование в число здесь
+
+    fetch('/alter_data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            f_name: f_name,
+            s_name: s_name,
+            subject: subject,
+            grade: parseInt(grade),
+            format: format,  // Добавлено: форма обучения
+            plan_hours: parseInt(plan_hours)  // Исправлено: без дублирования
+        })
+    })
+    .then(resp => resp.json())
+    .then(data => {
+        const resultDiv = document.getElementById('update_result');
+        if (data.success) {
+            resultDiv.innerHTML = `<p style="color: green;">${data.message}</p>`;  // Убрал subject_id, так как его нет
+            // Очистить форму
+            document.getElementById('edit_grade').value = '';
+            document.getElementById('edit_form_study').value = '';
+            document.getElementById('edit_hours').value = '';
+        } else {
+            resultDiv.innerHTML = `<p style="color: red;">Ошибка: ${data.error}</p>`;
+        }
+    })
+    .catch(error => {
+        document.getElementById('update_result').innerHTML = `<p style="color: red;">Ошибка сети: ${error.message}</p>`;
     });
 });
     </script>

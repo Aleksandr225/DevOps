@@ -225,24 +225,20 @@ def add_course(data: dict): #Добавление курса
 
 
 
-def alter_journal(f_data: dict, s_data: dict):#функция для изменения данных в журнале, сначала получаем все данные из функции выше, меняем их, после чего заменяем
-    student_id = get_student_id_by_name(f_data['f_name'], f_data['s_name'])
-    course_id = get_spec_id_by_subject(f_data['subject'])
+def alter_journal(s_data: dict):#функция для изменения данных в журнале, сначала получаем все данные из функции выше, меняем их, после чего заменяем
+    student_id = get_student_id_by_name(s_data['f_name'], s_data['s_name'])
+    course_id = get_spec_id_by_subject(s_data['subject'])
     conn = make_connect()
     cursor = conn.cursor()
 
-    cursor.execute('''UPDATE students SET f_name = %s, 
-                   s_name = %s, p_name = %s, date_entry = %s, 
-                   format = %s, group_num = %s where student_id = %s''',
-                   (s_data['f_name'], s_data['s_name'], s_data['p_name'],
-                    s_data['date_entry'], s_data['format'], s_data['group_num'], student_id,))
+    cursor.execute('''UPDATE students SET  
+                   format = %s where student_id = %s''',
+                   ( s_data['format'], student_id,))
     
-    cursor.execute('''UPDATE edu_plan SET spec_name = %s, subject = %s, semester = %s, plan_hours = %s, exam = %s
-                   WHERE spec_id = %s''', (s_data['spec_name'], s_data['subject'], s_data['semester'], 
-                                          s_data['plan_hours'], s_data[' exam'], course_id,))
+    cursor.execute('''UPDATE edu_plan SET plan_hours = %s WHERE spec_id = %s''', (s_data['plan_hours'], course_id,))
 
-    cursor.execute('''UPDATE journal SET semester = %s, year = %s, grade = %s WHERE student_id = %s AND spec_id = %s''',
-                   (s_data['semester'], s_data['year'], s_data['grade'], student_id, course_id,))
+    cursor.execute('''UPDATE journal SET grade = %s WHERE student_id = %s AND spec_id = %s''',
+                   (s_data['grade'], student_id, course_id,))
 
     conn.commit()
     conn.close()

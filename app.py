@@ -58,31 +58,15 @@ def get_student_info():
     else:
         return jsonify({"error": "Студент не найден"}), 404
     
+@app.route('/alter_data', methods=['POST'])
+def update_info():
+    data = request.get_json()
+    try:
+        alter_journal(data)
+        return jsonify({'success': True, 'message': 'Информация обновлена'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
-'''
-@app.route('/update_student_info', methods=['POST'])
-def update_student_info():
-    last_name = request.form.get('last_name')
-    first_name = request.form.get('first_name')
-    subject = request.form.get('subject')
-    new_form_study = request.form.get('new_form_study')
-    new_hours = request.form.get('new_hours')
-    new_exam_form = request.form.get('new_exam_form')
-
-    for s in students_db:
-        if s['last_name'] == last_name and s['first_name'] == first_name and s['subject'] == subject:
-            if new_form_study:
-                s['form_study'] = new_form_study
-            if new_hours:
-                try:
-                    s['hours'] = int(new_hours)
-                except ValueError:
-                    pass
-            if new_exam_form:
-                s['exam_form'] = new_exam_form
-            return jsonify({"message": "Данные обновлены", "student": s})
-    return jsonify({"error": "Студент не найден"}), 404
-'''
 
 @app.route('/add_student', methods=['POST'])
 def add_student_n():
@@ -91,13 +75,12 @@ def add_student_n():
         return jsonify({'success': False, 'error': 'Нет данных'}), 400
     
     try:
-        # Предполагаем, что add_student и add_data могут бросать исключения при ошибках
         add_student(data)
         add_data(data)
-        # Возвращаем успешный ответ с сообщением
+        
         return jsonify({'success': True, 'message': 'Студент добавлен успешно'})
     except Exception as e:
-        # В случае ошибки возвращаем сообщение об ошибке
+        
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/add_subject', methods=['POST'])
