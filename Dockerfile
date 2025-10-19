@@ -1,16 +1,11 @@
-# Используем официальный образ Postgres
-FROM postgres:16  
+FROM ubuntu:22.04
 
-# Устанавливаем переменные среды (пароль админа, имя БД)
-ENV POSTGRES_USER=postgres  
-ENV POSTGRES_PASSWORD=pass  
-ENV POSTGRES_DB=postgres  
+RUN apt update && apt-get install -y \
+    python3 \ 
+    python3-pip
 
-# Копируем дамп в директорию initdb (Postgres автоматически исполнит при первом запуске)
-COPY dump.sql /docker-entrypoint-initdb.d/
-
-# Опционально: Копируем кастомные схемы, если нужно
-# COPY schemas.sql /docker-entrypoint-initdb.d/
-
-# Экспортируйте порт 5432 (стандартный для Postgres)
-EXPOSE 5432
+COPY . /app/
+WORKDIR /app
+RUN pip install Flask
+EXPOSE 5000
+CMD ["python3", "app.py"]
