@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Студенты и предметы</title>
+    <style>
+         /* Общие стили */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        /* Заголовки */
+        h3, h4 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        /* Переключатель ролей (top-switcher) */
+        #metrics_block {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        #metrics_block label {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        #metrics_block input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        /* Блоки (block) */
+        .block {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        /* Формы (select, input, button) */
+        select, input[type="text"], input[type="number"], input[type="date"] {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        select {
+            height: 35px;
+        }
+
+        /* Кнопки */
+        button, .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover, .btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Результаты */
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+
+        /* Секция добавления студента (add_student_block) */
+        #add_student_block {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .student-form-col, .subject-form-col {
+            margin-bottom: 20px;
+        }
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .col-md-8, .col-md-4, .col-md-3, .col-md-2, .col-md-1, .col-12 {
+            padding: 5px;
+        }
+        .col-md-8 { width: 66.67%; }
+        .col-md-4 { width: 33.33%; }
+        .col-md-3 { width: 25%; }
+        .col-md-2 { width: 16.67%; }
+        .col-md-1 { width: 8.33%; }
+        .col-12 { width: 100%; }
+        .g-3 .col { margin-bottom: 10px; }
+
+        /* Поля формы */
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-control, .form-select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        /* Секция редактирования */
+        #edit_section {
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        /* Горизонтальная линия */
+        hr {
+            border: 1px solid #ddd;
+            margin: 20px 0;
+        }
+    </style>
+
+</head>
+<body>
+    <!-- Обновлённый upper switcher без кнопки -->
+    <div id="metrics_block" class="top-switcher">
+        <label>Выберите роль:</label>
+        <input type="radio" name="top_switch" value="1" id="switch1" checked>
+        <label for="switch1">Гость</label>
+        <input type="radio" name="top_switch" value="2" id="switch2">
+        <label for="switch2">Студент</label>
+        <input type="radio" name="top_switch" value="3" id="switch3">
+        <label for="switch3">Преподаватель</label>
+        
+    </div>
+
+    <!-- Верхний переключатель 1-3 -->
+
+    <!-- Нижняя часть с двумя блоками -->
+    <div>
+        <!-- Первый блок: Форма обучения и количество студентов -->
+        <div  id="study_form_block",class="block">
+            <label for="form_study_select">Выберите форму обучения:</label>
+            <select id="form_study_select">
+                {% for form in forms_study %}
+                <option value="{{ form }}">{{ form }}</option>
+                {% endfor %}
+            </select>
+            <button id="btn_count_students">Показать количество студентов</button>
+            <div id="students_count_result" class="result"></div>
+        </div>
+
+        <!-- Второй блок: Предмет, часы и экзамен -->
+        <div id="subject_block", class="block">
+            <label for="subject_select">Выберите предмет:</label>
+            <select id="subject_select">
+                {% for sub in subjects %}
+                <option value="{{ sub }}">{{ sub }}</option>
+                {% endfor %}
+            </select>
+            <button id="btn_subject_info">Показать часы и форму экзамена</button>
+            <div id="subject_info_result" class="result"></div>
+        </div>
+    </div>
+
+    <hr />
+
+    <!-- Нижнее поле для поиска студента и редактирования -->
+    <div  id="search_edit_block" class="block">
+        <h3>Поиск и редактирование студента</h3>
+        <label>Фамилия: <input type="text" id="last_name" /></label>
+        <label>Имя: <input type="text" id="first_name" /></label>
+        <label>Предмет: <input type="text" id="student_subject" /></label>
+        <button id="btn_search_student">Найти студента</button>
+
+        <div id="student_info" style="margin-top:20px;"></div>
+
+
+
+        <div id="edit_section" style="display:none; margin-top: 20px; border: 1px solid #ccc; padding: 10px;">
+            <h4>Редактировать данные студента</h4>
+            <label>Форма обучения:
+                <select id="edit_form_study">
+                    {% for form in forms_study %}
+                    <option value="{{ form }}">{{ form }}</option>
+                    {% endfor %}
+                </select>
+            </label><br/>
+            <label>Часы:
+                <input type="number" id="edit_hours" min="0" />
+            </label><br/>
+            <label> Оценка:
+                <input type="number" id="edit_grade" min ='0' max = '5' />
+            </label><br/>
+            <button id="btn_update_student">Сохранить изменения</button>
+            <div id="update_result" class="result"></div>
+        </div>
+    </div>
+    
+
+
+
+   <div id="add_student_block" class="student-section">
+    <h3>Добавить нового студента и предмет</h3>
+    <div class="row">
+        <!-- Левая колонка: форма для студента -->
+        <div class="col-md-8 student-form-col">
+            <h4>Информация о студенте</h4>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label for="add_last_name" class="form-label">Фамилия</label>
+                    <input type="text" class="form-control" id="add_last_name" placeholder="Фамилия" />
+                </div>
+                <div class="col-md-3">
+                    <label for="add_first_name" class="form-label">Имя</label>
+                    <input type="text" class="form-control" id="add_first_name" placeholder="Имя" />
+                </div>
+                <div class="col-md-3">
+                    <label for="add_date_entry" class="form-label">Дата поступления</label>
+                    <input type="date" class="form-control" id="add_date_entry" placeholder="Дата поступления" />
+                </div>
+                <div class="col-md-2">
+                    <label for="add_form_study" class="form-label">Форма обучения</label>
+                    <select class="form-select" id="add_form_study">
+                        <option value="">Форма обучения</option>
+                        {% for form in forms_study %}
+                        <option value="{{ form }}">{{ form }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="add_subject" class="form-label">Предмет</label>
+                    <select class="form-select" id="add_subject">
+                        <option value="">Предмет</option>
+                        {% for sub in subjects %}
+                        <option value="{{ sub }}">{{ sub }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <label for="add_hours" class="form-label">Часы</label>
+                    <input type="number" class="form-control" id="add_hours" placeholder="Часы" min="0" />
+                </div>
+                <div class="col-md-2">
+                    <label for="add_spec" class="form-label">Специальность</label>
+                    <select class="form-select" id="add_spec">
+                        <option value="">Специальность</option>
+                        {% for spec in specs %}
+                        <option value="{{ spec }}">{{ spec }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="add_exam_form" class="form-label">Форма отчетности</label>
+                    <select class="form-select" id="add_exam_form">
+                        <option value="">Форма отчетности</option>
+                        {% for exam in exams %}
+                        <option value="{{ exam }}">{{ exam }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="add_semester" class="form-label">Семестр</label>
+                    <select class="form-select" id="add_semester">
+                        <option value="">Семестр</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="add_group_num" class="form-label">Номер группы</label>
+                    <input type="number" class="form-control" id="add_group_num" placeholder="Номер группы" min="1" />
+                </div>
+                <div class="col-md-2">
+                    <label for="add_year" class="form-label">Год</label>
+                    <input type="number" class="form-control" id="add_year" placeholder="YYYY" min="1900" max="2100" />
+                </div>
+                <div class="col-md-2">
+                    <label for="add_grade" class="form-label">Оценка</label>
+                    <input type="number" class="form-control" id="add_grade" placeholder="Оценка" min="1" max="5" />
+                </div>
+            </div>
+            <button class="btn btn-custom mt-3" id="btn_add_student">Добавить студента</button>
+            <div id="add_student_result" class="result"></div>
+        </div>
+
+        <!-- Правая колонка: форма для добавления предмета -->
+        <div class="col-md-4 subject-form-col">
+            <h4>Добавить предмет</h4>
+            <div class="row g-3">
+                <div class="col-12">
+                    <label for="add_spec_name" class="form-label">Название специальности</label>
+                    <input type="text" class="form-control" id="add_spec_name" placeholder="Название специальности" maxlength="255" required />
+                </div>
+                <div class="col-12">
+                    <label for="add_subject_name" class="form-label">Предмет</label>
+                    <input type="text" class="form-control" id="add_subject_name" placeholder="Предмет" maxlength="255" required />
+                </div>
+                <div class="col-12">
+                    <label for="add_semester_sub" class="form-label">Семестр</label>
+                    <select class="form-select" id="add_semester_sub" required>
+                        <option value="">Семестр</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                    </select>
+                </div>
+                <div class="col-12">
+                    <label for="add_plan_hours" class="form-label">Плановые часы</label>
+                    <input type="number" class="form-control" id="add_plan_hours" placeholder="Плановые часы" min="1" required />
+                </div>
+                <div class="col-12">
+                    <label for="add_exam_sub" class="form-label">Форма экзамена</label>
+                    <select class="form-select" id="add_exam_sub">
+                        <option value="">Форма экзамена</option>
+                        {% for exam in exams %}  <!-- Предполагаю, что exams доступен; если нет, замените на статические опции -->
+                        <option value="{{ exam }}">{{ exam }}</option>
+                        {% endfor %}
+                        <!-- Если exams не определено, можно добавить статические: <option value="Экзамен">Экзамен</option> -->
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-custom mt-3" id="btn_add_subject">Добавить предмет</button>
+            <div id="add_subject_result" class="result"></div>
+        </div>
+    </div>
+</div>
+    <script>
+        document.querySelectorAll('input[name="top_switch"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+        const selectedValue = this.value;
+
+        // Сначала покажем все блоки
+        document.getElementById('metrics_block').style.display = 'block';
+        document.getElementById('study_form_block').style.display = 'block';
+        document.getElementById('subject_block').style.display = 'block';
+        document.getElementById('search_edit_block').style.display = 'block';
+        document.getElementById('add_student_block').style.display = 'block';
+        // Теперь edit_section показываем ТОЛЬКО если выбран "3"
+        if (selectedValue === '3') {
+            document.getElementById('edit_section').style.display = 'block';
+        } else {
+            document.getElementById('edit_section').style.display = 'none';
+        }
+
+        // Скрываем блоки в зависимости от роли
+        if (selectedValue === '1') {
+            // Гость видит только метрики и форму обучения
+            document.getElementById('search_edit_block').style.display = 'none';
+            document.getElementById('add_student_block').style.display = 'none';
+        } else if (selectedValue === '2') {
+            // Студент видит метрики, форму обучения и предмет
+            document.getElementById('search_edit_block').style.display = 'block';
+            document.getElementById('add_student_block').style.display = 'none';
+        } else if (selectedValue === '3') {
+            // Преподаватель видит все блоки — ничего не скрываем (edit_section уже показан выше)
+            // Здесь ничего делать не нужно
+        }
+
+        document.getElementById('top_switch_result').innerText = 'Выбрано: ' + selectedValue;
+
+        // Отправка через AJAX (fetch)
+        fetch('/process_switch', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ selected_switch: selectedValue })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                document.getElementById('model_metrics').innerText = 'Ошибка: ' + data.error;
+            } else {
+                document.getElementById('top_switch_result').innerText = 'Выбрано: ' + data.selected_value;
+                document.getElementById('model_metrics').innerText = 'Accuracy: ' + data.accuracy + ', F1: ' + data.f1_score;
+            }
+        })
+        .catch(error => {
+            document.getElementById('model_metrics').innerText = 'Ошибка сети: ' + error.message;
+        });
+    });
+});
+
+// Обработчик кнопки подсчёта студентов (оставил без изменений)
+document.getElementById('btn_count_students').addEventListener('click', () => {
+    const form_study = document.getElementById('form_study_select').value;
+    fetch('/get_student_count', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `form_study=${encodeURIComponent(form_study)}`
+    })
+    .then(resp => resp.json())
+    .then(data => {
+        document.getElementById('students_count_result').textContent = `Студентов: ${data.count}`;
+    });
+});
+
+// Обработчик получения инфо по предмету
+document.getElementById('btn_subject_info').addEventListener('click', () => {
+    const subject = document.getElementById('subject_select').value;
+    fetch('/get_subject_info', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `subject=${encodeURIComponent(subject)}`
+    })
+    .then(resp => resp.json())
+    .then(data => {
+        if (data.error) {
+            document.getElementById('subject_info_result').textContent = data.error;
+        } else {
+            document.getElementById('subject_info_result').textContent =
+                `Часы: ${data.hours}, Форма экзамена: ${data.exam}`;
+        }
+    });
+});
+
+// Поиск студента с учётом роли (edit_section показывается только для роли 3)
+document.getElementById('btn_search_student').addEventListener('click', () => {
+    const last_name = document.getElementById('last_name').value.trim();
+    const first_name = document.getElementById('first_name').value.trim();
+    const subject = document.getElementById('student_subject').value.trim();
+    const selectedRole = document.querySelector('input[name="top_switch"]:checked')?.value;
+
+    if (!last_name || !first_name || !subject) {
+        alert("Пожалуйста, заполните все поля для поиска");
+        return;
+    }
+
+    fetch('/get_student_info', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `last_name=${encodeURIComponent(last_name)}&first_name=${encodeURIComponent(first_name)}&subject=${encodeURIComponent(subject)}`
+    })
+    .then(resp => resp.json())
+    .then(data => {
+        const infoDiv = document.getElementById('student_info');
+        if (data.error)  {
+            infoDiv.textContent = data.error;
+            document.getElementById('edit_section').style.display = 'none';
+        } else {
+            infoDiv.innerHTML = `
+                Фамилия: ${data.s_name}<br/>
+                Имя: ${data.f_name}<br/>
+                Предмет: ${data.subject}<br/>
+                Часы: ${data.plan_hours}<br/>
+                Форма экзамена: ${data.exam}<br/>
+                Форма обучения: ${data.format}<br/>
+                Оценка: ${data.grade}
+            `;
+
+            // Показываем edit_section только если роль "3" (преподаватель)
+            if (selectedRole === '3') {
+                document.getElementById('edit_section').style.display = 'block';
+
+                // Заполнить форму редактирования
+                document.getElementById('edit_form_study').value = data.format;
+                document.getElementById('edit_hours').value = data.plan_hours;
+                document.getElementById('edit_exam_form').value = data.exam;
+            } else {
+                document.getElementById('edit_section').style.display = 'none';
+            }
+        }
+    });
+});
+
+
+        // Обновление данных студента
+        document.getElementById('btn_update_student').addEventListener('click', () => {
+            const last_name = document.getElementById('last_name').value.trim();
+            const first_name = document.getElementById('first_name').value.trim();
+            const subject = document.getElementById('student_subject').value.trim();
+
+            const new_form_study = document.getElementById('edit_form_study').value;
+            const new_hours = document.getElementById('edit_hours').value;
+            const new_exam_form = document.getElementById('edit_exam_form').value.trim();
+
+            fetch('/update_student_info', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `last_name=${encodeURIComponent(last_name)}&first_name=${encodeURIComponent(first_name)}&subject=${encodeURIComponent(subject)}&new_form_study=${encodeURIComponent(new_form_study)}&new_hours=${encodeURIComponent(new_hours)}&new_exam_form=${encodeURIComponent(new_exam_form)}`
+            })
+            .then(resp => resp.json())
+            .then(data => {
+                const updateResult = document.getElementById('update_result');
+                if (data.error) {
+                    updateResult.textContent = data.error;
+                } else {
+                    updateResult.textContent = data.message;
+                }
+            });
+        });
+
+        document.getElementById('btn_add_student').addEventListener('click', () => {
+    const lastName = document.getElementById('add_last_name').value.trim();
+    const firstName = document.getElementById('add_first_name').value.trim();
+    const dateEntry = document.getElementById('add_date_entry').value;  // Новое поле
+    const formStudy = document.getElementById('add_form_study').value;
+    const subject = document.getElementById('add_subject').value;
+    const hours = document.getElementById('add_hours').value;
+    const spec = document.getElementById('add_spec').value;  // Новое поле
+    const examForm = document.getElementById('add_exam_form').value;  // Исправлено ID
+    const semester = document.getElementById('add_semester').value;  // Новое поле
+    const groupNum = document.getElementById('add_group_num').value || 1;  // Значение по умолчанию
+    const year = document.getElementById('add_year').value;  // Новое поле
+    const grade = document.getElementById('add_grade').value;  // Новое поле
+
+    // Валидация: проверка на заполненность обязательных полей (расширил список)
+    if (!lastName || !firstName || !dateEntry || !formStudy || !subject || !hours || !spec || !examForm || !semester || !year || !grade) {
+        alert("Пожалуйста, заполните все поля");
+        return;
+    }
+
+    fetch('/add_student', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            s_name: lastName,
+            f_name: firstName,
+            date_entry: dateEntry,  // Новое поле
+            format: formStudy,
+            subject: subject,
+            plan_hours: parseInt(hours),
+            spec: spec,  // Новое поле
+            exam: examForm,  // Исправлено
+            semester: parseInt(semester),  // Новое поле
+            group_num: parseInt(groupNum),
+            year: parseInt(year),  // Новое поле
+            grade: parseInt(grade)  // Новое поле
+        })
+    })
+    .then(resp => resp.json())
+    .then(data => {
+        const resultDiv = document.getElementById('add_student_result');
+        if (data.success) {
+            resultDiv.innerHTML = `<p style="color: green;">Студент добавлен успешно! ID: ${data.student_id}</p>`;
+            // Очистить форму (дополнил новыми полями)
+            document.getElementById('add_last_name').value = '';
+            document.getElementById('add_first_name').value = '';
+            document.getElementById('add_date_entry').value = '';
+            document.getElementById('add_form_study').value = '';
+            document.getElementById('add_subject').value = '';
+            document.getElementById('add_hours').value = '';
+            document.getElementById('add_spec').value = '';
+            document.getElementById('add_exam_form').value = '';
+            document.getElementById('add_semester').value = '';
+            document.getElementById('add_group_num').value = '';
+            document.getElementById('add_year').value = '';
+            document.getElementById('add_grade').value = '';
+        } else {
+            resultDiv.innerHTML = `<p style="color: red;">Ошибка: ${data.error}</p>`;
+        }
+    })
+    .catch(error => {
+        document.getElementById('add_student_result').innerHTML = `<p style="color: red;">Ошибка сети: ${error.message}</p>`;
+    });
+});
+
+    document.getElementById('btn_add_subject').addEventListener('click', () => {
+    const specname = document.getElementById('add_spec_name').value.trim();
+    const subject = document.getElementById('add_subject_name').value.trim();
+    const semester = document.getElementById('add_semester_sub').value;
+    const hours = document.getElementById('add_plan_hours').value;
+    const exam = document.getElementById('add_exam_sub').value;  // Исправлено: exam, а не examForm
+
+    // Валидация: проверка на заполненность обязательных полей
+    if (!specname || !subject || !semester || !hours || !exam) {
+        alert("Пожалуйста, заполните все поля");
+        return;
+    }
+
+    fetch('/add_subject', {  // Исправлено: /add_subject (согласованно с Flask)
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            spec_name: specname,
+            subject: subject,  // Исправлено: subject_name
+            semester: semester,
+            plan_hours: parseInt(hours),
+            exam: exam  // Исправлено: exam
+        })
+    })
+    .then(resp => resp.json())
+    .then(data => {
+        const resultDiv = document.getElementById('add_subject_result');
+        if (data.success) {
+            resultDiv.innerHTML = `<p style="color: green;">${data.message} ID: ${data.subject_id}</p>`;  // Исправлено: subject_id
+            // Очистить форму (исправлено: правильный синтаксис)
+            document.getElementById('add_spec_name').value = '';
+            document.getElementById('add_subject_name').value = '';
+            document.getElementById('add_semester_sub').value = '';
+            document.getElementById('add_plan_hours').value = '';
+            document.getElementById('add_exam_sub').value = '';
+        } else {
+            resultDiv.innerHTML = `<p style="color: red;">Ошибка: ${data.error}</p>`;
+        }
+    })
+    .catch(error => {
+        document.getElementById('add_subject_result').innerHTML = `<p style="color: red;">Ошибка сети: ${error.message}</p>`;
+    });
+});
+
+    document.getElementById('btn_update_student').addEventListener('click', () => {
+    const subject = document.getElementById('student_subject').value.trim();
+    const f_name = document.getElementById('first_name').value.trim();
+    const s_name = document.getElementById('last_name').value.trim();
+    const grade = document.getElementById('edit_grade').value;
+    const format = document.getElementById('edit_form_study').value;  // Форма обучения
+    const plan_hours_str = document.getElementById('edit_hours').value;  // Строковое значение
+
+    // Валидация: проверка на заполненность обязательных полей
+    if (!f_name || !s_name || !subject || !grade || !format || !plan_hours_str) {
+        alert("Пожалуйста, заполните все поля");
+        return;
+    }
+
+    const plan_hours = parseInt(plan_hours_str);  // Преобразование в число здесь
+
+    fetch('/alter_data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            f_name: f_name,
+            s_name: s_name,
+            subject: subject,
+            grade: parseInt(grade),
+            format: format,  // Добавлено: форма обучения
+            plan_hours: parseInt(plan_hours)  // Исправлено: без дублирования
+        })
+    })
+    .then(resp => resp.json())
+    .then(data => {
+        const resultDiv = document.getElementById('update_result');
+        if (data.success) {
+            resultDiv.innerHTML = `<p style="color: green;">${data.message}</p>`;  // Убрал subject_id, так как его нет
+            // Очистить форму
+            document.getElementById('edit_grade').value = '';
+            document.getElementById('edit_form_study').value = '';
+            document.getElementById('edit_hours').value = '';
+        } else {
+            resultDiv.innerHTML = `<p style="color: red;">Ошибка: ${data.error}</p>`;
+        }
+    })
+    .catch(error => {
+        document.getElementById('update_result').innerHTML = `<p style="color: red;">Ошибка сети: ${error.message}</p>`;
+    });
+});
+    </script>
+</body>
+</html>
+ 
