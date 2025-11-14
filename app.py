@@ -5,7 +5,7 @@ app.secret_key = '225'
 
 
 # Формы обучения и предметы
-forms_study = ["Дневная", "Заочная", "Вечерняя"]
+forms_study = ["143", "225", "125", "231"]
 
 exams = ['Зачет', 'Экзамен']
 
@@ -19,7 +19,7 @@ def index():
 @app.route('/get_student_count', methods=['POST'])
 def get_student_count():
     form_study = request.form.get('form_study')
-    count = get_students_by_format(form_study)
+    count = get_students_by_group(form_study)
     return jsonify({"count": count})
 
 

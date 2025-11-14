@@ -1,7 +1,8 @@
 import sqlite3
+
 def make_connect():
     try:
-        conn = sqlite3.connect('db.db')
+        conn = sqlite3.connect('DevOps\db.db')
         return conn
     except:
         print('ошибка')
@@ -54,6 +55,17 @@ def get_students_by_format(format: str) -> int: #функция которая �
         return students[0]
     else:
         return 'Такой формы обучения нет'
+    
+def get_students_by_group(format: str) -> int: #функция которая получает кол-во студентов в зависимости от формы обучения
+    conn = make_connect()
+    cursor = conn.cursor()
+    cursor.execute('SELECT COUNT(student_id) FROM students WHERE group_num = ?', (format,))
+    students = cursor.fetchone()
+    if students is not None:
+        conn.close()
+        return students[0]
+    else:
+        return 'Такой группы обучения нет'
 
 def get_hours_exam_by_spec(subj: str) -> dict: # функция 2 возвращает словарь формата {'hours': 56, 'exam': 'Зачет'}
     conn = make_connect()
@@ -238,4 +250,5 @@ if __name__ == '__main__':
     #add_course(data)
     print(get_all_data('Антон','Антонов', 'ui/ux-дизайн', 3))# протестите функцию с id от 1-3
     print(get_hours_exam_by_spec('ui/ux-дизайн'))
+    print(get_subjects())
 
