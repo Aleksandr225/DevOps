@@ -10,7 +10,7 @@ services:
     container_name: web_app
     hostname: app
     build:
-      context: /DevOps/
+      context: ./DevOps
       dockerfile: Dockerfile
     ports:
       - 5000:5000
