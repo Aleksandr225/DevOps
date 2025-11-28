@@ -2,7 +2,7 @@ import sqlite3
 
 def make_connect():
     try:
-        conn = sqlite3.connect('DevOps\db.db')
+        conn = sqlite3.connect('db.db')
         return conn
     except:
         print('ошибка')
@@ -46,16 +46,16 @@ def clean_dict(func):
 
 
 def get_students_by_format(format: str) -> int: #функция которая получает кол-во студентов в зависимости от формы обучения
-    # conn = make_connect()
-    # cursor = conn.cursor()
-    # cursor.execute('SELECT COUNT(student_id) FROM students WHERE format = ?',(format,))
-    # students = cursor.fetchone()
-    # if students is not None:
-    #     conn.close()
-    #     return students[0]
-    # else:
-    #     return 'Такой формы обучения нет'
-    return 'bad ounput'
+    conn = make_connect()
+    cursor = conn.cursor()
+    cursor.execute('SELECT COUNT(student_id) FROM students WHERE format = ?',(format,))
+    students = cursor.fetchone()
+    if students is not None:
+        conn.close()
+        return students[0]
+    else:
+        return 'Такой формы обучения нет'
+    
     
 def get_students_by_group(format: str) -> int: #функция которая получает кол-во студентов в зависимости от формы обучения
     conn = make_connect()
