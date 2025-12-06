@@ -2,7 +2,7 @@ import sqlite3
 
 def make_connect():
     try:
-        conn = sqlite3.connect('DevOps\db.db')
+        conn = sqlite3.connect('db.db')
         return conn
     except:
         print('ошибка')
