@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  sqlite3:
+    stdin_open: true
+    tty: true
+    image: keinos/sqlite3
+    restart: unless-stopped
+  server:
+    container_name: web_app
+    hostname: app
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - 5000:5000
+    restart: always
+    depends_on:
+      - sqlite3
