@@ -18,6 +18,7 @@
                 <configuration>
                     <url>jdbc:sqlite:db/db.db</url>
                     <locations>filesystem:db/migration</locations>
+                    <baselineOnMigrate>true</baselineOnMigrate>
                 </configuration>
                 <!-- NEW: Add the SQLite JDBC driver as a plugin dependency -->
                 <dependencies>
