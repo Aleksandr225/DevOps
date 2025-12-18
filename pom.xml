@@ -1,0 +1,14 @@
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-maven-plugin</artifactId>
+            <version>9.22.3</version>  <!-- Проверьте актуальную версию -->
+            <configuration>
+                <url>jdbc:postgresql://localhost:5432/postgres</url>
+                <user>postgres</user>
+                <password>123</password>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
