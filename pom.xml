@@ -3,18 +3,12 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <!-- 1. Required Model Version -->
     <modelVersion>4.0.0</modelVersion>
-
-    <!-- 2. Project Coordinates (GAV - GroupId, ArtifactId, Version) -->
     <groupId>com.yourcompany</groupId>
     <artifactId>database-migrations</artifactId>
     <version>1.0.0</version>
-
-    <!-- 3. It's common for Flyway projects to use 'pom' packaging -->
     <packaging>pom</packaging>
 
-    <!-- 4. YOUR EXISTING BUILD SECTION GOES HERE -->
     <build>
         <plugins>
             <plugin>
@@ -25,6 +19,14 @@
                     <url>jdbc:sqlite:/db/db.db</url>
                     <locations>filesystem:src/main/resources/db/migration</locations>
                 </configuration>
+                <!-- NEW: Add the SQLite JDBC driver as a plugin dependency -->
+                <dependencies>
+                    <dependency>
+                        <groupId>org.xerial</groupId>
+                        <artifactId>sqlite-jdbc</artifactId>
+                        <version>3.45.2.0</version> <!-- Check for the latest version -->
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
