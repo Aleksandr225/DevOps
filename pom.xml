@@ -16,8 +16,8 @@
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>9.22.3</version>
                 <configuration>
-                    <url>jdbc:sqlite:/db/db.db</url>
-                    <locations>filesystem:/db/migration</locations>
+                    <url>jdbc:sqlite:db/db.db</url>
+                    <locations>filesystem:db/migration</locations>
                 </configuration>
                 <!-- NEW: Add the SQLite JDBC driver as a plugin dependency -->
                 <dependencies>
