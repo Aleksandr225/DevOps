@@ -30,10 +30,7 @@ CREATE TABLE IF NOT EXISTS "students" (
 	PRIMARY KEY("student_id" AUTOINCREMENT)
 );
 
-CREATE TABLE test (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL
-);
+
 
 INSERT INTO "edu_plan" VALUES (1,'Кибербезопасность','DevOps',1,56,'Зачет');
 INSERT INTO "edu_plan" VALUES (2,'Биг дата','Мат. стат',2,128,'Экзамен');

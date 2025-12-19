@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS "test2" (
+	"student_id"	INTEGER,
+	PRIMARY KEY("student_id" AUTOINCREMENT)
+);
