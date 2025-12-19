@@ -38,7 +38,7 @@ def test_get_spec_id_by_subject():
     result = get_spec_id_by_subject('DevOps')  
     assert result == 1
 
-test_get_hours_exam_by_spec()
+
 test_get_spec_id_by_subject()
 test_get_student_id_by_name()
 test_get_students_by_format()
