@@ -29,6 +29,12 @@ CREATE TABLE IF NOT EXISTS "students" (
 	"group_num"	INTEGER NOT NULL,
 	PRIMARY KEY("student_id" AUTOINCREMENT)
 );
+
+CREATE TABLE test (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL
+);
+
 INSERT INTO "edu_plan" VALUES (1,'Кибербезопасность','DevOps',1,56,'Зачет');
 INSERT INTO "edu_plan" VALUES (2,'Биг дата','Мат. стат',2,128,'Экзамен');
 INSERT INTO "edu_plan" VALUES (3,'САПР','Коммункации в IT',1,48,'Зачет');
