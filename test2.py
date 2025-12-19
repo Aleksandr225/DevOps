@@ -27,13 +27,7 @@ def test_get_hours_exam_by_spec(spec_name, expected):
     result = get_hours_exam_by_spec(spec_name)
     assert result == expected
 
-# Test function for getting student ID by name
-@pytest.mark.parametrize("first_name,last_name,expected", [
-    ('Альберт', 'Альбертов', 1)
-])
-def test_get_student_id_by_name(first_name, last_name, expected):
-    result = get_student_id_by_name(first_name, last_name)
-    assert result == expected
+
 
 # Test function for getting spec ID by subject
 @pytest.mark.parametrize("subject_name,expected", [

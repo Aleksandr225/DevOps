@@ -246,9 +246,7 @@ def get_specs():
 
 
 if __name__ == '__main__':
-    data = {'f_name': 'Андрей', 's_name': 'Зайцев', 'p_name': 'Артемович', 'date_entry': '05-01-2025', 'format': 'Заочная', 'group_num': 125, 'spec_name': 'Дизайн', 'subject': 'ui/ux-дизайн', 'semester': '1', 'plan_hours': 35, 'exam': 'Зачет', 'year': '2025', 'grade': 5}
-    #add_course(data)
-    print(get_all_data('Антон','Антонов', 'ui/ux-дизайн', 3))# протестите функцию с id от 1-3
+    
     print(get_hours_exam_by_spec('ui/ux-дизайн'))
     print(get_subjects())
 
